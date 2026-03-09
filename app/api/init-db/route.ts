@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
+import bcrypt from 'bcryptjs'
 
 export async function GET() {
     try {
@@ -27,25 +28,55 @@ export async function GET() {
             }
         })
 
-        // Seed a dummy user
-        const userId = 'demo-user-1'
+        // Seed a real Admin user
+        const adminId = 'admin-user-id'
+        const adminEmail = 'admin@gympro.com'
+        const adminPasswordHash = await bcrypt.hash('admin123', 10)
+
         await prisma.user.upsert({
-            where: { id: userId },
+            where: { email: adminEmail },
             update: {},
             create: {
-                id: userId,
-                email: 'valeria@demo.com',
-                name: 'Valeria M.',
-                passwordHash: 'hashedpassword',
+                id: adminId,
+                email: adminEmail,
+                name: 'Gym Owner',
+                passwordHash: adminPasswordHash,
                 gymId: gym1Id,
-                xp: 1500,
-                level: 5,
-                currentStreak: 7,
-                longestStreak: 14
+                role: 'ADMIN',
+                isVerified: true,
+                xp: 5000,
+                level: 10
             }
         })
 
-        return NextResponse.json({ success: true, message: 'Database verified and seeded successfully.' })
+        // Seed a demo member
+        const memberId = 'demo-member-id'
+        const memberEmail = 'member@example.com'
+        const memberPasswordHash = await bcrypt.hash('member123', 10)
+
+        await prisma.user.upsert({
+            where: { email: memberEmail },
+            update: {},
+            create: {
+                id: memberId,
+                email: memberEmail,
+                name: 'Carlos Pérez',
+                passwordHash: memberPasswordHash,
+                gymId: gym1Id,
+                role: 'MEMBER',
+                isVerified: true,
+                xp: 850,
+                level: 2,
+                currentStreak: 5
+            }
+        })
+
+        return NextResponse.json({
+            success: true,
+            message: 'Database verified and seeded with Auth-ready accounts.',
+            adminAccount: adminEmail,
+            memberAccount: memberEmail
+        })
     } catch (error) {
         console.error('Seed error:', error)
         return NextResponse.json({ error: 'Failed to seed DB' }, { status: 500 })
