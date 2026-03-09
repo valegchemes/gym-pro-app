@@ -71,9 +71,38 @@ export async function GET() {
             }
         })
 
+        // Seed a challenge
+        const challengeId = 'demo-challenge-id'
+        const challenge = await prisma.challenge.upsert({
+            where: { id: challengeId },
+            update: {},
+            create: {
+                id: challengeId,
+                name: 'Guerra de Calorías',
+                description: 'Quema 5000 kcal esta semana',
+                startDate: new Date(),
+                endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+                goalType: 'CALORIES',
+                goalValue: 5000,
+                gymId: gym1Id
+            }
+        })
+
+        // Connect member to challenge
+        await prisma.userChallenge.upsert({
+            where: { userId_challengeId: { userId: memberId, challengeId: challenge.id } },
+            update: {},
+            create: {
+                userId: memberId,
+                challengeId: challenge.id,
+                progress: 2450,
+                isCompleted: false
+            }
+        })
+
         return NextResponse.json({
             success: true,
-            message: 'Database verified and seeded with Auth-ready accounts.',
+            message: 'Database verified and seeded with Auth-ready accounts and challenges.',
             adminAccount: adminEmail,
             memberAccount: memberEmail
         })

@@ -54,6 +54,7 @@ model User {
   achievements  UserAchievement[]
   records       PersonalRecord[]
   posts         SocialPost[]
+  challenges    UserChallenge[]
 }
 
 model Workout {
@@ -164,4 +165,21 @@ model Challenge {
 
   gymId       String
   gym         Gym      @relation(fields: [gymId], references: [id])
+
+  participants UserChallenge[]
+}
+
+model UserChallenge {
+  id          String   @id @default(uuid())
+  completedAt DateTime @default(now())
+  progress    Int      @default(0)
+  isCompleted Boolean  @default(false)
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+
+  challengeId String
+  challenge   Challenge @relation(fields: [challengeId], references: [id])
+
+  @@unique([userId, challengeId])
 }
