@@ -1,0 +1,159 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Gym {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  logo        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       User[]
+  workouts    Workout[]
+  checkIns    CheckIn[]
+  posts       SocialPost[]
+  challenges  Challenge[]
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  name          String
+  passwordHash  String
+  
+  xp            Int      @default(0)
+  level         Int      @default(1)
+  currentStreak Int      @default(0)
+  longestStreak Int      @default(0)
+  lastCheckIn   DateTime?
+
+  gymId         String
+  gym           Gym      @relation(fields: [gymId], references: [id])
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  workouts      Workout[]
+  checkIns      CheckIn[]
+  achievements  UserAchievement[]
+  records       PersonalRecord[]
+  posts         SocialPost[]
+}
+
+model Workout {
+  id          String   @id @default(uuid())
+  name        String
+  date        DateTime @default(now())
+  duration    Int?     
+  calories    Int?
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  
+  gymId       String
+  gym         Gym      @relation(fields: [gymId], references: [id])
+
+  sets        WorkoutSet[]
+  
+  createdAt   DateTime @default(now())
+}
+
+model WorkoutSet {
+  id          String   @id @default(uuid())
+  reps        Int
+  weight      Float
+  
+  workoutId   String
+  workout     Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  
+  exerciseId  String
+  exercise    Exercise @relation(fields: [exerciseId], references: [id])
+}
+
+model Exercise {
+  id          String   @id @default(uuid())
+  name        String
+  targetMuscle String
+  category    String   
+
+  sets        WorkoutSet[]
+  records     PersonalRecord[]
+}
+
+model CheckIn {
+  id          String   @id @default(uuid())
+  date        DateTime @default(now())
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  
+  gymId       String
+  gym         Gym      @relation(fields: [gymId], references: [id])
+}
+
+model PersonalRecord {
+  id          String   @id @default(uuid())
+  weight      Float    
+  date        DateTime @default(now())
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  
+  exerciseId  String
+  exercise    Exercise @relation(fields: [exerciseId], references: [id])
+}
+
+model Achievement {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  icon        String
+  xpReward    Int
+
+  users       UserAchievement[]
+}
+
+model UserAchievement {
+  id            String      @id @default(uuid())
+  date          DateTime    @default(now())
+  
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  
+  achievementId String
+  achievement   Achievement @relation(fields: [achievementId], references: [id])
+}
+
+model SocialPost {
+  id          String   @id @default(uuid())
+  content     String
+  type        String   
+  date        DateTime @default(now())
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  
+  gymId       String
+  gym         Gym      @relation(fields: [gymId], references: [id])
+}
+
+model Challenge {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  startDate   DateTime
+  endDate     DateTime
+  goalType    String   
+  goalValue   Int
+
+  gymId       String
+  gym         Gym      @relation(fields: [gymId], references: [id])
+}
