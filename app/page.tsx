@@ -41,6 +41,40 @@ export default function Home() {
     }
   }, [gymId])
 
+  if (!userStats) {
+    return (
+      <div className="min-h-screen pt-24 px-4 flex flex-col items-center justify-center text-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="max-w-2xl bg-white dark:bg-gray-800 p-12 rounded-[3rem] shadow-2xl border border-gray-100 dark:border-gray-700"
+        >
+          <div className="h-24 w-24 bg-blue-600 rounded-[2rem] flex items-center justify-center text-white mx-auto mb-8 shadow-xl shadow-blue-500/20">
+            <Dumbbell className="h-12 w-12" />
+          </div>
+          <h1 className="text-4xl md:text-5xl font-black mb-6 tracking-tight">Tu Mejor Versión Comienza Aquí</h1>
+          <p className="text-xl text-gray-500 dark:text-gray-400 mb-10 leading-relaxed">
+            Registra tus entrenos, compite en retos y desbloquea tu potencial con analíticas impulsadas por IA.
+          </p>
+          <div className="flex flex-col md:flex-row gap-4 justify-center">
+            <Link
+              href="/register"
+              className="px-10 py-5 bg-blue-600 text-white rounded-3xl font-black text-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 card-hover"
+            >
+              Únete Ahora — Gratis
+            </Link>
+            <Link
+              href="/login"
+              className="px-10 py-5 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-3xl font-black text-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all card-hover"
+            >
+              Iniciar Sesión
+            </Link>
+          </div>
+        </motion.div>
+      </div>
+    )
+  }
+
   const stats = [
     { label: 'Racha', value: userStats ? `${userStats.currentStreak} días` : '...', icon: Flame, color: 'text-orange-500', bg: 'bg-orange-100 dark:bg-orange-900/30' },
     { label: 'Entrenamientos', value: userStats?.totalWorkouts ?? '...', icon: Dumbbell, color: 'text-blue-500', bg: 'bg-blue-100 dark:bg-blue-900/30' },

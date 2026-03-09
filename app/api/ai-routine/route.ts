@@ -112,8 +112,15 @@ const MOCK_ROUTINES: Record<string, any> = {
     },
 }
 
+import { getSessionUser } from '@/lib/auth'
+
 export async function POST(request: Request) {
     try {
+        const sessionUser = await getSessionUser()
+        if (!sessionUser) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        }
+
         const { level, goal, daysPerWeek } = await request.json()
 
         const levelKey = level || 'Intermedio'

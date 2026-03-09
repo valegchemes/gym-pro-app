@@ -1,16 +1,24 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
+import { getSessionUser } from '@/lib/auth'
 
 export async function POST(request: Request) {
     try {
-        const { gymId, userId } = await request.json()
+        const sessionUser = await getSessionUser()
+        const { gymId } = await request.json()
 
-        if (!gymId || !userId) {
+        if (!sessionUser) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        }
+
+        if (!gymId) {
             return NextResponse.json(
-                { error: 'Missing gymId or userId' },
+                { error: 'Missing gymId' },
                 { status: 400 }
             )
         }
+
+        const userId = sessionUser.id
 
         // Register check-in
         const checkIn = await prisma.checkIn.create({

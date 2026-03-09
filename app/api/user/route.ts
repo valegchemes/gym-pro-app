@@ -1,13 +1,17 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
+import { getSessionUser } from '@/lib/auth'
 
 export async function GET(request: Request) {
     try {
-        const { searchParams } = new URL(request.url)
-        const userId = searchParams.get('userId') || 'demo-user-1'
+        const sessionUser = await getSessionUser()
+
+        if (!sessionUser) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        }
 
         const user = await prisma.user.findUnique({
-            where: { id: userId },
+            where: { id: sessionUser.id },
             include: {
                 achievements: { include: { achievement: true } },
                 records: { include: { exercise: true }, orderBy: { date: 'desc' }, take: 5 },

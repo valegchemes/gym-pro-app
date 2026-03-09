@@ -143,8 +143,15 @@ const DIET_PLANS: Record<string, any> = {
     }
 }
 
+import { getSessionUser } from '@/lib/auth'
+
 export async function POST(request: Request) {
     try {
+        const sessionUser = await getSessionUser()
+        if (!sessionUser) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        }
+
         const { goal, weight, activityLevel, allergies } = await request.json()
 
         const goalKey = goal || 'Mantenimiento'

@@ -4,6 +4,16 @@ import bcrypt from 'bcryptjs'
 
 export async function GET() {
     try {
+        // CLEAR DATABASE (Except Gyms/Exercises if we want to keep them, but let's clear users)
+        await prisma.userChallenge.deleteMany()
+        await prisma.userAchievement.deleteMany()
+        await prisma.personalRecord.deleteMany()
+        await prisma.workoutSet.deleteMany()
+        await prisma.workout.deleteMany()
+        await prisma.socialPost.deleteMany()
+        await prisma.checkIn.deleteMany()
+        await prisma.user.deleteMany()
+
         // Check if the gyms exist
         const gym1Id = 'demo-gym-1'
         const gym2Id = 'demo-gym-2'
@@ -28,8 +38,7 @@ export async function GET() {
             }
         })
 
-        // Seed a real Admin user
-        const adminId = 'admin-user-id'
+        // Seed a real Admin user for the owner (Required to access admin panel)
         const adminEmail = 'admin@gympro.com'
         const adminPasswordHash = await bcrypt.hash('admin123', 10)
 
@@ -37,43 +46,20 @@ export async function GET() {
             where: { email: adminEmail },
             update: {},
             create: {
-                id: adminId,
                 email: adminEmail,
                 name: 'Gym Owner',
                 passwordHash: adminPasswordHash,
                 gymId: gym1Id,
                 role: 'ADMIN',
                 isVerified: true,
-                xp: 5000,
-                level: 10
+                xp: 1000,
+                level: 1
             }
         })
 
-        // Seed a demo member
-        const memberId = 'demo-member-id'
-        const memberEmail = 'member@example.com'
-        const memberPasswordHash = await bcrypt.hash('member123', 10)
-
-        await prisma.user.upsert({
-            where: { email: memberEmail },
-            update: {},
-            create: {
-                id: memberId,
-                email: memberEmail,
-                name: 'Carlos Pérez',
-                passwordHash: memberPasswordHash,
-                gymId: gym1Id,
-                role: 'MEMBER',
-                isVerified: true,
-                xp: 850,
-                level: 2,
-                currentStreak: 5
-            }
-        })
-
-        // Seed a challenge
+        // Seed a basic challenge
         const challengeId = 'demo-challenge-id'
-        const challenge = await prisma.challenge.upsert({
+        await prisma.challenge.upsert({
             where: { id: challengeId },
             update: {},
             create: {
@@ -88,23 +74,16 @@ export async function GET() {
             }
         })
 
-        // Connect member to challenge
-        await prisma.userChallenge.upsert({
-            where: { userId_challengeId: { userId: memberId, challengeId: challenge.id } },
-            update: {},
-            create: {
-                userId: memberId,
-                challengeId: challenge.id,
-                progress: 2450,
-                isCompleted: false
-            }
+        return NextResponse.json({
+            success: true,
+            message: 'Database cleaned and reset successfully. You can now register fresh.',
+            adminAccount: adminEmail,
         })
 
         return NextResponse.json({
             success: true,
             message: 'Database verified and seeded with Auth-ready accounts and challenges.',
             adminAccount: adminEmail,
-            memberAccount: memberEmail
         })
     } catch (error) {
         console.error('Seed error:', error)

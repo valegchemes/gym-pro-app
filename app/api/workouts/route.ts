@@ -1,13 +1,21 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
+import { getSessionUser } from '@/lib/auth'
 
 export async function POST(request: Request) {
     try {
-        const { gymId, userId, workoutName, duration, calories, exercises } = await request.json()
-
-        if (!gymId || !userId) {
-            return NextResponse.json({ error: 'Missing userId or gymId' }, { status: 400 })
+        const sessionUser = await getSessionUser()
+        if (!sessionUser) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
+
+        const { gymId, workoutName, duration, calories, exercises } = await request.json()
+
+        if (!gymId) {
+            return NextResponse.json({ error: 'Missing gymId' }, { status: 400 })
+        }
+
+        const userId = sessionUser.id
 
         const newRecords = []
 
