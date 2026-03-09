@@ -23,11 +23,19 @@ model Gym {
   challenges  Challenge[]
 }
 
+enum Role {
+  MEMBER
+  ADMIN
+}
+
 model User {
   id            String   @id @default(uuid())
   email         String   @unique
   name          String
   passwordHash  String
+  role          Role     @default(MEMBER)
+  isVerified    Boolean  @default(false)
+  verificationCode String?
   
   xp            Int      @default(0)
   level         Int      @default(1)

@@ -72,19 +72,25 @@ export default function OwnerDashboard() {
                     </div>
                 </motion.div>
 
-                {/* Section Tabs */}
-                <div className="flex gap-2 mb-6">
+                <div className="flex flex-wrap gap-2 mb-6">
                     {[
                         { id: 'overview', label: '📊 Resumen' },
                         { id: 'retention', label: '⚠️ Retención y Churn' },
                         { id: 'members', label: '🏆 Top Miembros' },
+                        { id: 'all-users', label: '👤 Gestión de Usuarios' },
                     ].map(tab => (
                         <button
                             key={tab.id}
-                            onClick={() => setActiveSection(tab.id as any)}
+                            onClick={() => {
+                                if (tab.id === 'all-users') {
+                                    window.location.href = '/admin/users'
+                                    return
+                                }
+                                setActiveSection(tab.id as any)
+                            }}
                             className={`px-5 py-3 rounded-xl font-semibold text-sm transition-all ${activeSection === tab.id
-                                    ? 'bg-blue-600 text-white shadow-lg'
-                                    : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                ? 'bg-blue-600 text-white shadow-lg'
+                                : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                                 }`}
                         >{tab.label}</button>
                     ))}

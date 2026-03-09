@@ -15,14 +15,29 @@ export default function Home() {
   const [userStats, setUserStats] = useState<any>(null)
 
   useEffect(() => {
+    const fetchUserStats = async () => {
+      try {
+        const res = await fetch('/api/auth/me')
+        if (!res.ok) throw new Error('Not authenticated')
+        const data = await res.json()
+        setUserStats(data)
+      } catch (err) {
+        console.error('Error fetching user stats:', err)
+      }
+    }
+    fetchUserStats()
+  }, [])
+
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' })
+    window.location.href = '/login'
+  }
+
+  useEffect(() => {
     if (gymId) {
       fetch(`/api/feed?gymId=${gymId}`)
         .then(res => res.json())
         .then(data => { if (data.success) setFeed(data.posts) })
-
-      fetch('/api/user?userId=demo-user-1')
-        .then(res => res.json())
-        .then(data => { if (data.success) setUserStats(data.user) })
     }
   }, [gymId])
 
