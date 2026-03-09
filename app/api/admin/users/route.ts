@@ -25,9 +25,6 @@ export async function GET() {
                     orderBy: { date: 'desc' },
                     take: 1
                 },
-                workouts: {
-                    select: { id: true }
-                },
                 _count: {
                     select: { workouts: true, checkIns: true }
                 }
@@ -35,16 +32,16 @@ export async function GET() {
             orderBy: { createdAt: 'desc' }
         })
 
-        const detailedUsers = users.map(user => ({
+        const detailedUsers = users.map((user: any) => ({
             id: user.id,
             name: user.name,
             email: user.email,
             role: user.role,
             level: user.level,
             xp: user.xp,
-            workoutsCount: user._count.workouts,
-            checkInsCount: user._count.checkIns,
-            lastCheckIn: user.checkIns[0]?.date || null,
+            workoutsCount: user._count?.workouts || 0,
+            checkInsCount: user._count?.checkIns || 0,
+            lastCheckIn: user.checkIns?.[0]?.date || null,
             isVerified: user.isVerified
         }))
 

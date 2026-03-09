@@ -51,24 +51,24 @@ export async function GET(
                     }
                 }
             }
-        })
+        }) as any
 
         if (!user) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 })
         }
 
         // Comprehensive analytics
-        const totalCheckIns = user.checkIns.length
-        const totalWorkouts = user.workouts.length
-        const lastCheckInDate = user.checkIns[0]?.date || null
+        const totalCheckIns = user.checkIns?.length || 0
+        const totalWorkouts = user.workouts?.length || 0
+        const lastCheckInDate = user.checkIns?.[0]?.date || null
         const daysSinceLastCheckIn = lastCheckInDate
             ? Math.floor((Date.now() - new Date(lastCheckInDate).getTime()) / (1000 * 60 * 60 * 24))
             : null
 
         let engagementStatus: 'Active' | 'At Risk' | 'Inactive' = 'Active'
-        if (!lastCheckInDate || daysSinceLastCheckIn! > 14) {
+        if (!lastCheckInDate || (daysSinceLastCheckIn !== null && daysSinceLastCheckIn > 14)) {
             engagementStatus = 'Inactive'
-        } else if (daysSinceLastCheckIn! > 7) {
+        } else if (daysSinceLastCheckIn !== null && daysSinceLastCheckIn > 7) {
             engagementStatus = 'At Risk'
         }
 
@@ -92,21 +92,21 @@ export async function GET(
                 status: engagementStatus
             },
             history: {
-                checkIns: user.checkIns,
-                workouts: user.workouts.map(w => ({
+                checkIns: user.checkIns || [],
+                workouts: (user.workouts || []).map((w: any) => ({
                     id: w.id,
                     name: w.name,
                     date: w.date,
-                    setsCount: w.sets.length,
-                    muscle: w.sets[0]?.exercise.targetMuscle || 'N/A'
+                    setsCount: w.sets?.length || 0,
+                    muscle: w.sets?.[0]?.exercise?.targetMuscle || 'N/A'
                 }))
             },
-            challenges: user.challenges.map(c => ({
-                id: c.challenge.id,
-                name: c.challenge.name,
+            challenges: (user.challenges || []).map((c: any) => ({
+                id: c.challenge?.id,
+                name: c.challenge?.name,
                 isCompleted: c.isCompleted,
                 progress: c.progress,
-                goalValue: c.challenge.goalValue
+                goalValue: c.challenge?.goalValue || 1
             }))
         })
     } catch (error) {

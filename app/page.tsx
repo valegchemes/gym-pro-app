@@ -47,25 +47,33 @@ export default function Home() {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="max-w-2xl bg-white dark:bg-gray-800 p-12 rounded-[3rem] shadow-2xl border border-gray-100 dark:border-gray-700"
+          className="max-w-2xl bg-white dark:bg-gray-800 p-12 rounded-[3.5rem] shadow-2xl border border-gray-100 dark:border-gray-800 relative overflow-hidden"
         >
-          <div className="h-24 w-24 bg-blue-600 rounded-[2rem] flex items-center justify-center text-white mx-auto mb-8 shadow-xl shadow-blue-500/20">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-600/10 rounded-full blur-3xl -ml-16 -mb-16"></div>
+
+          <div className="h-24 w-24 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl flex items-center justify-center text-white mx-auto mb-10 shadow-2xl shadow-blue-500/30 transform rotate-3">
             <Dumbbell className="h-12 w-12" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-black mb-6 tracking-tight">Tu Mejor Versión Comienza Aquí</h1>
-          <p className="text-xl text-gray-500 dark:text-gray-400 mb-10 leading-relaxed">
-            Registra tus entrenos, compite en retos y desbloquea tu potencial con analíticas impulsadas por IA.
+
+          <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight text-gray-900 dark:text-white leading-[1.1]">
+            Transforma Tu <span className="text-blue-600">Ritual</span> Fitness
+          </h1>
+
+          <p className="text-xl text-gray-500 dark:text-gray-400 mb-12 leading-relaxed max-w-lg mx-auto">
+            La plataforma definitiva para gestionar tus entrenos, competir con amigos y alcanzar tus metas con IA.
           </p>
-          <div className="flex flex-col md:flex-row gap-4 justify-center">
+
+          <div className="flex flex-col md:flex-row gap-5 justify-center">
             <Link
               href="/register"
-              className="px-10 py-5 bg-blue-600 text-white rounded-3xl font-black text-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 card-hover"
+              className="px-12 py-5 bg-blue-600 text-white rounded-[1.5rem] font-bold text-lg hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/40 hover:-translate-y-1"
             >
-              Únete Ahora — Gratis
+              Comenzar Ahora
             </Link>
             <Link
               href="/login"
-              className="px-10 py-5 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-3xl font-black text-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all card-hover"
+              className="px-12 py-5 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-[1.5rem] font-bold text-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all hover:-translate-y-1"
             >
               Iniciar Sesión
             </Link>

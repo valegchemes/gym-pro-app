@@ -11,12 +11,16 @@ export async function getSessionUser() {
         if (!token) return null
 
         const { payload } = await jwtVerify(token, JWT_SECRET)
+
+        if (!payload || !payload.userId) return null
+
         return {
             id: payload.userId as string,
             email: payload.email as string,
-            role: payload.role as string
+            role: (payload.role as string) || 'MEMBER'
         }
     } catch (error) {
+        console.error('Session verify error:', error)
         return null
     }
 }
